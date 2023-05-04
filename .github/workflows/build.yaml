@@ -7,13 +7,13 @@ on:
     paths:
       - 'src/**'
       - 'tests/**'
-      - '.github/workflows/build.yaml'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main ]
     paths:
       - 'src/**'
       - 'tests/**'
-      - '.github/workflows/build.yaml'
+      - '.github/workflows/**'
 
 jobs:
   build:
@@ -46,6 +46,10 @@ jobs:
         run: |
           echo "version=$(poetry version --short)" >> "$GITHUB_OUTPUT"
 
+      - name: Build
+        run: |
+          poetry build
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -56,3 +60,18 @@ jobs:
         run: |
           git tag ${{ steps.get_version.outputs.version }}
           git push --tags
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/openxes_cli_py-${{ steps.get_version.outputs.version }}-py${{ matrix.python-version }}.whl
+            dist/openxes_cli_py-${{ steps.get_version.outputs.version }}-py${{ matrix.python-version }}.tar.gz
+          tag_name: ${{ steps.get_version.outputs.version }}
+          body: |
+            # OpenXES-CLI Python
+            
+            These are Python bindings for the [OpenXES-CLI](https://github.com/AutomatedProcessImprovement/openxes-cli) application.
+            
+            ## Changelog
+            $(git log --format="%h %s" $(git describe --tags --abbrev=0)..HEAD)

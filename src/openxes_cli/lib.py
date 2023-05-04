@@ -5,7 +5,7 @@ from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 
-jar_file = Path(__file__).parent.parent.parent / "lib/openxes-cli.jar"
+jar_file = Path(__file__).parent.parent / "lib/openxes-cli.jar"
 
 
 def xes_to_csv(xes_path: Path, csv_path: Path, jar_file: Path = jar_file):
@@ -20,7 +20,7 @@ def xes_to_csv(xes_path: Path, csv_path: Path, jar_file: Path = jar_file):
     return run_jar(jar_file, "-f", str(xes_path), "-t", "csv", "-o", str(csv_path))
 
 
-def csv_to_xes(csv_path: Path, xes_path: Path):
+def csv_to_xes(csv_path: Path, xes_path: Path, jar_file: Path = jar_file):
     """
     Converts CSV to XES using openxes-cli.jar. Java 8 is required.
 

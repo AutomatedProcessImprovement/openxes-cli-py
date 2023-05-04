@@ -56,16 +56,16 @@ jobs:
           name: openxes_cli_py-py${{ matrix.python-version }}-${{ steps.get_version.outputs.version }}
           path: dist
 
-      - name: Assign repository tag
-        run: |
-          git tag ${{ steps.get_version.outputs.version }}
-          git push --tags
-
       - name: Generate changelog
         run: |
           echo "# Changelog" > CHANGELOG.md
           echo "" >> CHANGELOG.md
           git log --pretty=format:"%s" ${{ steps.get_version.outputs.version }}..HEAD >> CHANGELOG.md
+
+      - name: Assign repository tag
+        run: |
+          git tag ${{ steps.get_version.outputs.version }}
+          git push --tags
 
       - name: Create release
         uses: softprops/action-gh-release@v1
@@ -75,3 +75,7 @@ jobs:
             dist/openxes_cli_py-${{ steps.get_version.outputs.version }}-py${{ matrix.python-version }}.tar.gz
           tag_name: ${{ steps.get_version.outputs.version }}
           body_path: CHANGELOG.md
+
+      - name: Publish to PyPI
+        run: |
+          poetry publish -u __token__ -p $PYPI_TOKEN

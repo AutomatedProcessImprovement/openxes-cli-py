@@ -61,6 +61,12 @@ jobs:
           git tag ${{ steps.get_version.outputs.version }}
           git push --tags
 
+      - name: Generate changelog
+        run: |
+          echo "# Changelog" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          git log --pretty=format:"%s" ${{ steps.get_version.outputs.version }}..HEAD >> CHANGELOG.md
+
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -68,10 +74,4 @@ jobs:
             dist/openxes_cli_py-${{ steps.get_version.outputs.version }}-py${{ matrix.python-version }}.whl
             dist/openxes_cli_py-${{ steps.get_version.outputs.version }}-py${{ matrix.python-version }}.tar.gz
           tag_name: ${{ steps.get_version.outputs.version }}
-          body: |
-            # OpenXES-CLI Python
-            
-            These are Python bindings for the [OpenXES-CLI](https://github.com/AutomatedProcessImprovement/openxes-cli) application.
-            
-            ## Changelog
-            $(git log --format="%h %s" $(git describe --tags --abbrev=0)..HEAD)
+          body_path: CHANGELOG.md

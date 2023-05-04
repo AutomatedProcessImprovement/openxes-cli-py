@@ -24,7 +24,8 @@ jobs:
         python-version: [ '3.9' ]
     steps:
       - uses: actions/checkout@v3
-        fetch-depth: 0
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v3
         with:
@@ -80,4 +81,4 @@ jobs:
 
       - name: Publish to PyPI
         run: |
-          poetry publish -u __token__ -p $PYPI_TOKEN
+          poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}

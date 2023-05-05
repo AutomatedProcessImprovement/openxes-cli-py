@@ -28,7 +28,29 @@ def csv_to_xes(csv_path: Path, xes_path: Path, jar_file: Path = jar_file):
     :param xes_path: Output path for the XES file.
     :return: Exit code of the Java process.
     """
+    if not is_csv_valid(csv_path):
+        raise ValueError(
+            "Event log is not valid. It must contain the following columns: "
+            "case:concept:name, concept:name, org:timestamp, start_timestamp, time:timestamp"
+        )
+
     return run_jar(jar_file, "-f", str(csv_path), "-t", "xes", "-o", str(xes_path))
+
+
+def is_csv_valid(csv_path: Path) -> bool:
+    with open(csv_path, "r") as f:
+        first_line = f.readline()
+
+    return all(
+        col in first_line
+        for col in [
+            "case:concept:name",
+            "concept:name",
+            "org:resource",
+            "start_timestamp",
+            "time:timestamp",
+        ]
+    )
 
 
 def run_jar(jar_file: Path, *args) -> int:

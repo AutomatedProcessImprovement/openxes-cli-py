@@ -1,5 +1,6 @@
 import logging
-import os
+import platform
+import subprocess
 
 from pathlib import Path
 
@@ -17,6 +18,9 @@ def xes_to_csv(xes_path: Path, csv_path: Path, jar_file: Path = jar_file):
     :param jar_file: Path to the openxes-cli.jar file. Default: lib/openxes-cli.jar.
     :return: Exit code of the Java process.
     """
+    if platform.system().lower() == "windows":
+        xes_path = "\"" + str(xes_path) + "\""
+        csv_path = "\"" + str(csv_path) + "\""
     return run_jar(jar_file, "-f", str(xes_path), "-t", "csv", "-o", str(csv_path))
 
 
@@ -33,6 +37,10 @@ def csv_to_xes(csv_path: Path, xes_path: Path, jar_file: Path = jar_file):
             "Event log is not valid. It must contain the following columns: "
             "case:concept:name, concept:name, org:timestamp, start_timestamp, time:timestamp"
         )
+
+    if platform.system().lower() == "windows":
+        xes_path = "\"" + str(xes_path) + "\""
+        csv_path = "\"" + str(csv_path) + "\""
 
     return run_jar(jar_file, "-f", str(csv_path), "-t", "xes", "-o", str(xes_path))
 
@@ -54,6 +62,10 @@ def is_csv_valid(csv_path: Path) -> bool:
 
 
 def run_jar(jar_file: Path, *args) -> int:
-    cmd = f"java -jar {str(jar_file)} {' '.join(args)}"
+    if platform.system().lower() == "windows":
+        jar_file_path = "\"" + str(jar_file) + "\""
+    else:
+        jar_file_path = str(jar_file)
+    cmd = f"java -jar {jar_file_path} {' '.join(args)}"
     logging.info("Running", cmd)
-    return os.system(cmd)
+    return subprocess.call(cmd)

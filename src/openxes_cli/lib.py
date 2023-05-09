@@ -64,8 +64,9 @@ def is_csv_valid(csv_path: Path) -> bool:
 def run_jar(jar_file: Path, *args) -> int:
     if platform.system().lower() == "windows":
         jar_file_path = "\"" + str(jar_file) + "\""
+        cmd = f"java -jar {jar_file_path} {' '.join(args)}"
     else:
         jar_file_path = str(jar_file)
-    cmd = f"java -jar {jar_file_path} {' '.join(args)}"
+        cmd = ["java", "-jar", jar_file_path] + list(args)
     logging.info("Running", cmd)
     return subprocess.call(cmd)

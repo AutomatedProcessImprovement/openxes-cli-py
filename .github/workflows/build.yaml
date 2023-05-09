@@ -69,11 +69,13 @@ jobs:
           git log --pretty=format:"%h - %s (%an)" $(git describe --tags --abbrev=0)..HEAD >> CHANGELOG.md
           echo "" >> CHANGELOG.md
           echo "\`\`\`" >> CHANGELOG.md
+        if: github.ref == 'refs/heads/main'
         
       - name: Assign repository tag
         run: |
           git tag ${{ steps.get_version.outputs.version }}
           git push --tags
+        if: github.ref == 'refs/heads/main'
 
       - name: Create release
         uses: softprops/action-gh-release@v1
@@ -82,7 +84,9 @@ jobs:
             dist/*
           tag_name: ${{ steps.get_version.outputs.version }}
           body_path: CHANGELOG.md
+        if: github.ref == 'refs/heads/main'
 
       - name: Publish to PyPI
         run: |
           poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}
+        if: github.ref == 'refs/heads/main'

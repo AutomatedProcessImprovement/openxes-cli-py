@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openxes-cli-py"
-version = "0.1.13"
+version = "0.1.14"
 description = ""
 authors = ["Ihar Suvorau <ihar.suvorau@gmail.com>"]
 readme = "README.md"

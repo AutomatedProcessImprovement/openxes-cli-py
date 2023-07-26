@@ -1,7 +1,6 @@
 import logging
 import platform
 import subprocess
-
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
@@ -19,8 +18,8 @@ def xes_to_csv(xes_path: Path, csv_path: Path, jar_file: Path = jar_file):
     :return: Exit code of the Java process.
     """
     if platform.system().lower() == "windows":
-        xes_path = "\"" + str(xes_path) + "\""
-        csv_path = "\"" + str(csv_path) + "\""
+        xes_path = '"' + str(xes_path) + '"'
+        csv_path = '"' + str(csv_path) + '"'
     return run_jar(jar_file, "-f", str(xes_path), "-t", "csv", "-o", str(csv_path))
 
 
@@ -39,8 +38,8 @@ def csv_to_xes(csv_path: Path, xes_path: Path, jar_file: Path = jar_file):
         )
 
     if platform.system().lower() == "windows":
-        xes_path = "\"" + str(xes_path) + "\""
-        csv_path = "\"" + str(csv_path) + "\""
+        xes_path = '"' + str(xes_path) + '"'
+        csv_path = '"' + str(csv_path) + '"'
 
     return run_jar(jar_file, "-f", str(csv_path), "-t", "xes", "-o", str(xes_path))
 
@@ -62,11 +61,17 @@ def is_csv_valid(csv_path: Path) -> bool:
 
 
 def run_jar(jar_file: Path, *args) -> int:
+    # Prepare system dependent command
     if platform.system().lower() == "windows":
-        jar_file_path = "\"" + str(jar_file) + "\""
+        jar_file_path = '"' + str(jar_file) + '"'
         cmd = f"java -jar {jar_file_path} {' '.join(args)}"
     else:
         jar_file_path = str(jar_file)
         cmd = ["java", "-jar", jar_file_path] + list(args)
-    logging.info("Running", cmd)
+
+    # Convert to string for logging
+    cmd_str = " ".join(cmd) if isinstance(cmd, list) else cmd
+    logging.info(f"Running {cmd_str}")
+
+    # Run the command
     return subprocess.call(cmd)

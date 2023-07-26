@@ -5,4 +5,5 @@ __pycache__
 *.xes
 dist
 venv
+.venv
 .idea/
